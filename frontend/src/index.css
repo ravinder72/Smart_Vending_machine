@@ -1,0 +1,122 @@
+.nav-bar {
+  display: flex;
+  justify-content: space-between;
+  background-color: #270858;
+  padding: 20px;
+  color: black;
+}
+
+.brand-button {
+  background-color: #135cfa; /* Light grey */
+  padding: 1px 16px;
+  color: #270858; /* Darker text for contrast */
+  border-radius: 16px; /* Rounded corners */
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.brand-button:hover {
+  background-color: #fdfdfd; /* Slightly darker grey on hover */
+  color: #000000; /* White text on hover */
+}
+
+.brand {
+  font-weight: bolder;
+  width: 18%;
+  text-align: center;
+  font-size: 2rem;
+  text-decoration: none;
+  color: white;
+}
+
+.search-bar {
+  flex-grow: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: -30px; 
+}
+
+.search-bar input {
+  width: 40%;
+  padding: 4px;
+  text-align: center; /* Center placeholder text */
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+input::placeholder {
+  text-align: center;
+  font-weight: bold;
+}
+
+.cart {
+  text-align: center;
+  font-weight: bolder;
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: white;
+}
+.nav-bar-wrapper {
+  display: flex;
+  justify-content: space-around;
+  padding: 15px;
+  background-color: #4b1b78;
+  color: white;
+  font-weight: bold;
+}
+
+/* Category Button Styling */
+.category-button {
+  background-color: #4a294d; /* Blue background */
+  color: white; /* White text */
+  padding: 8px 14px;
+  border: none;
+  border-radius: 9px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+}
+
+/* Hover effect */
+.category-button:hover {
+  background-color: #ffffff; /* White background on hover */
+  color: #000000; /* Black text on hover */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow effect */
+}
+
+.img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.img img {
+  width: 350px;
+  height: 350px;
+}
+
+.con {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4rem;
+}
+.containerx{
+  padding-right: 10px;
+  padding-left: 140px; /* Adds spacing on the left side */
+}
+
+.total-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #270858; /* Dark purple for the price */
+  padding: 10px;
+  margin-right: 20px;
+}
+html, body {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
