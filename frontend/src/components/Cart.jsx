@@ -22,71 +22,72 @@ const Cart = ({ cart, setCart }) => {
 
   // Function to handle form submission (Vending Machine ID form)
   
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async(e) => {
     e.preventDefault();
     alert(`Vending Machine ID: ${vendingMachineId}`);
     setShowCheckoutForm(false);
     setShowPaymentForm(true);
-    setVendingMachineId(""); // Reset vending machine ID
+    //setVendingMachineId(""); // Reset vending machine ID
   };
-  
-
-  /*
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-  
-    const webhookUrl = "https://eo3w4bepwknwo1c.m.pipedream.net"; // Your webhook endpoint
-  
-    const payload = {
-      event: "CHECKOUT_STARTED",
-      vendingMachineId: vendingMachineId,
-      cartItems: cart,
-      totalAmount: cart.reduce((acc, product) => acc + Number(product.price), 0),
-      timestamp: new Date().toISOString(),
-    };
-  
-    try {
-      const response = await fetch(webhookUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-  
-      const result = await response.text();
-      console.log("Webhook response:", result);
-    } catch (error) {
-      console.error("Error sending webhook:", error);
-    }
-  
-    // Proceed to next step
-    alert(`Vending Machine ID: ${vendingMachineId}`);
-    setShowCheckoutForm(false);
-    setShowPaymentForm(true);
-    setVendingMachineId(""); // Reset vending machine ID
-  };
-  
-  */
 
   // UPI Payment Function
-  const handleUPIPayment = () => {
-    const upiId = "ravinderaitpune@oksbi"; // 🔹 Replace with your actual UPI ID
-    const amount = totalPrice; // 🔹 Total cart amount
-    const transactionId = `TXN${Date.now()}`; // 🔹 Unique transaction ID
-  
-    // 🔹 UPI deep link format
-    const upiUrl = `upi://pay?pa=${upiId}&pn=VendingMachine&tid=${transactionId}&tr=${transactionId}&tn=Payment&am=${amount}&cu=INR`;
-  
-    // 🔹 Create a hidden anchor tag to force UPI payment
-    const upiAnchor = document.createElement("a");
-    upiAnchor.href = upiUrl;
-    upiAnchor.style.display = "none";
-    document.body.appendChild(upiAnchor);
-    upiAnchor.click();
-    document.body.removeChild(upiAnchor);
+  const handleUPIPayment = async () => {
+      if (!vendingMachineId || vendingMachineId.trim() === "") {
+          alert("Error: Please enter a valid Vending Machine ID before making a payment.");
+          return;
+      }
+      const upiId = "example@oksbi";  // 🔹 Replace with your actual UPI ID  
+      const amount = totalPrice;  // 🔹 Total cart amount  
+      const transactionId = `TXN${Date.now()}`;  // 🔹 Unique transaction ID  
+
+      // 🔹 UPI deep link format  
+      const upiUrl = `upi://pay?pa=${upiId}&pn=VendingMachine&tid=${transactionId}&tr=${transactionId}&tn=Payment&am=${amount}&cu=INR`;
+
+      // 🔹 Open UPI payment  
+      const upiAnchor = document.createElement("a");
+      upiAnchor.href = upiUrl;
+      upiAnchor.style.display = "none";
+      document.body.appendChild(upiAnchor);
+      upiAnchor.click();
+      document.body.removeChild(upiAnchor);
+
+      // 🔹 Wait for user confirmation after a few seconds
+      setTimeout(async () => {
+          const isPaid = window.confirm("Did you complete the payment?");
+          if (isPaid) {
+              const webhookUrl = "https://eo3w4bepwknwo1c.m.pipedream.net"; // Your webhook endpoint
+
+              const payload = {
+                  event: "CHECKOUT_STARTED",
+                  vendingMachineId: vendingMachineId,
+                  cartItems: cart,
+                  totalAmount: amount,
+                  timestamp: new Date().toISOString(),
+              };
+
+              try {
+                  const response = await fetch(webhookUrl, {
+                      method: "POST",
+                      headers: {
+                          "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify(payload),
+                  });
+
+                  const result = await response.text();
+                  console.log("Webhook response:", result);
+                  alert("Payment processed, vending will start soon!");
+
+              } catch (error) {
+                  console.error("Error sending webhook:", error);
+                  alert("Payment successful, but there was an issue processing the vending machine.");
+              }
+          } else {
+              alert("Payment not completed. Try again.");
+          }
+      }, 5000); // 🔹 Waits 5 seconds before asking
   };
-  
+
 
   // Confirm Payment Button
   const handlePaymentConfirmation = () => {
