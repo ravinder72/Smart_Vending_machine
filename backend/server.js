@@ -68,3 +68,5 @@ app.listen(PORT, () => {
 });
 
 app.get('/favicon.ico', (req, res) => res.status(204).end());
+
+app.options("*", cors());
