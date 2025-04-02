@@ -9,7 +9,7 @@ const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
-const apiUrl = process.env.VITE_FRONTEND_URL || "http://localhost:5173";
+const apiUrl = process.env.VITE_FRONTEND_URL;
 const PORT = process.env.PORT || 3000;
 
 app.use(cors({

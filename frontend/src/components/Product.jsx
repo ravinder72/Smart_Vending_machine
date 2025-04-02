@@ -14,7 +14,7 @@ const Product = ({ items, cart, setCart }) => {
 
   // Fetch updated stock data from the server
   
-  const apiUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000"; // Fallback for local testing
+  const apiUrl = import.meta.env.VITE_BACKEND_URL; // Fallback for local testing
 
   useEffect(() => {
     const socket = new WebSocket(apiUrl);
