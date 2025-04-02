@@ -4,17 +4,24 @@ import bodyParser from "body-parser";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const apiUrl = process.env.VITE_FRONTEND_URL || "*";
-
-// Middleware
-app.use(cors({ origin: apiUrl, methods: ["GET", "POST", "OPTIONS"], credentials: true }));
-app.use(bodyParser.json());
 
 // Logging middleware (Move to the top)
 app.use((req, res, next) => {
     console.log(`Received ${req.method} request on ${req.url} with body:`, req.body);
     next();
   });
+
+// Middleware
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", apiUrl || "http://localhost:5173");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    next();
+});
+app.use(bodyParser.json());
+
+const apiUrl = process.env.VITE_FRONTEND_URL;
 
 // Global variable to store the latest stock data
 let latestStock = {};

@@ -148,7 +148,8 @@ const Cart = ({ cart, setCart }) => {
           </div>
         )
       }
-
+      
+      
       {/* Checkout Form Modal */}
       {showCheckoutForm && (
         <div className="checkout-form-modal" style={{

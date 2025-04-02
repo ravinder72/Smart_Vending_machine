@@ -4,6 +4,38 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Product = ({ items, cart, setCart }) => {
+
+  useEffect(() => {
+    async function getData() {
+      const apiUrl = import.meta.env.VITE_BACKEND_URL;
+  
+      try {
+        const response = await fetch(`${apiUrl}/api/data`);
+        const data = await response.json();
+  
+        console.log("Stock Data Fetched:", data);
+  
+        if (data.items) {
+          setStock((prevStock) => {
+            const updatedStock = { ...prevStock }; // Copy previous stock
+  
+            data.items.forEach(({ itemId, quantity }) => {
+              updatedStock[itemId] = quantity; // Update stock values
+            });
+  
+            return updatedStock; // Return merged stock object
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching stock data:", error);
+      }
+    }
+  
+    getData();
+  }, []);
+  
+  
+
   // Initialize stock state with all items set to 0
   const [stock, setStock] = useState(
     items.reduce((acc, product) => {
@@ -11,45 +43,6 @@ const Product = ({ items, cart, setCart }) => {
       return acc;
     }, {})
   );
-
-  // Fetch updated stock data from the server
-  
-  const apiUrl = import.meta.env.VITE_BACKEND_URL || "*";
-
-  useEffect(() => {
-    const fetchStockData = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/api/data`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            value: "1-2,2-8,3-7",
-          }),
-        });
-        const data = await response.json();
-        
-        if (data.items) {
-          const updatedStock = {};
-          data.items.forEach(({ itemId, quantity }) => {
-            updatedStock[itemId] = quantity;
-          });
-  
-          setStock((prevStock) => ({
-            ...prevStock,
-            ...updatedStock,
-          }));
-        }
-      } catch (error) {
-        console.error("Error fetching stock data:", error);
-      }
-    };
-  
-    fetchStockData();
-  }, []);
-  
-  
   
   const addToCart = (id, price, title, description, imgSrc) => {
     if (stock[id] === 0) {
