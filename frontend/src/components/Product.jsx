@@ -1,18 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Product = ({ items, cart, setCart }) => {
-  // Create a stock state for each product to track available stock
+  // Initialize stock state with all items set to 0
   const [stock, setStock] = useState(
     items.reduce((acc, product) => {
-      // Default stock is 10, except for Cadbury Dairy Milk which starts at 1
-      acc[product.id] = product.title === "Cadbury Dairy Milk" ? 1 : 10;
+      acc[product.id] = 0;
       return acc;
     }, {})
   );
 
+  // Fetch updated stock data from the server
+  
+  const apiUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000"; // Fallback for local testing
+
+  useEffect(() => {
+    const socket = new WebSocket(apiUrl);
+
+    socket.onopen = () => {
+      console.log('Connected to WebSocket server');
+    };
+
+    socket.onmessage = (event) => {
+      const updatedStock = JSON.parse(event.data);
+      setStock((prevStock) => ({
+        ...prevStock,
+        ...updatedStock,
+      }));
+    };
+
+    socket.onclose = () => {
+      console.log('Disconnected from WebSocket server');
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, []);
+  
+  
   const addToCart = (id, price, title, description, imgSrc) => {
     if (stock[id] === 0) {
       // Show toast if the product is out of stock
