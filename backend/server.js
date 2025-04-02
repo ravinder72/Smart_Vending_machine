@@ -15,6 +15,8 @@ let latestStock = {};
 
 // Endpoint to receive updates from Pipeworks
 app.post("/api/data", (req, res) => {
+    
+    console.log("Received Request Body:", req.body); // Debugging Log
     const { command, value } = req.body;
     
     if (!command || !value) {
