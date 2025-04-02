@@ -17,28 +17,38 @@ const Product = ({ items, cart, setCart }) => {
   const apiUrl = import.meta.env.VITE_BACKEND_URL; // Fallback for local testing
 
   useEffect(() => {
-    const socket = new WebSocket(apiUrl);
-
-    socket.onopen = () => {
-      console.log('Connected to WebSocket server');
+    const fetchStockData = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/api/data`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            value: "1-2,2-8,3-7",
+          }),
+        });
+        const data = await response.json();
+        
+        if (data.items) {
+          const updatedStock = {};
+          data.items.forEach(({ itemId, quantity }) => {
+            updatedStock[itemId] = quantity;
+          });
+  
+          setStock((prevStock) => ({
+            ...prevStock,
+            ...updatedStock,
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching stock data:", error);
+      }
     };
-
-    socket.onmessage = (event) => {
-      const updatedStock = JSON.parse(event.data);
-      setStock((prevStock) => ({
-        ...prevStock,
-        ...updatedStock,
-      }));
-    };
-
-    socket.onclose = () => {
-      console.log('Disconnected from WebSocket server');
-    };
-
-    return () => {
-      socket.close();
-    };
+  
+    fetchStockData();
   }, []);
+  
   
   
   const addToCart = (id, price, title, description, imgSrc) => {
