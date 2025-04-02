@@ -15,26 +15,29 @@ let latestStock = {};
 
 // Endpoint to receive updates from Pipeworks
 app.post("/api/data", (req, res) => {
-  const { value } = req.body;
-
-  if (!value) {
-    return res.status(400).json({ status: "error", message: "Missing 'value' field" });
-  }
-
-  // Process the value string into an array of objects
-  const items = value.split(",").map(entry => {
-    const [itemId, quantity] = entry.split("-").map(Number);
-    return { itemId, quantity };
+    const { command, value } = req.body;
+    
+    if (!command || !value) {
+      return res.status(400).json({ status: "error", message: "Missing 'command' or 'value' field" });
+    }
+    
+    console.log(`Received command: ${command}`);
+    console.log(`Received value: ${value}`);
+    
+    // Process the value string into an array if needed:
+    const items = value.split(",").map(entry => {
+      const [itemId, quantity] = entry.split("-").map(Number);
+      return { itemId, quantity };
+    });
+    
+    // Update your stock logic here (or any other logic for the command)
+    items.forEach(({ itemId, quantity }) => {
+      latestStock[itemId] = quantity;
+    });
+    
+    res.json({ status: "success", message: "Update received", items });
   });
-
-  // Update the global stock object based on the received items
-  items.forEach(({ itemId, quantity }) => {
-    latestStock[itemId] = quantity;
-  });
-
-  console.log("Received Items:", items);
-  res.json({ status: "success", message: "Update received", items });
-});
+  
 
 // Endpoint for the frontend to retrieve the current stock
 app.get("/api/data", (req, res) => {
