@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const apiUrl = process.env.VITE_FRONTEND_URL || "https://your-frontend-url.com";  // Fallback URL
+const apiUrl = process.env.VITE_FRONTEND_URL || "*";
 
 // Middleware
 app.use(cors({ origin: apiUrl, methods: ["GET", "POST", "OPTIONS"], credentials: true }));
@@ -12,18 +12,15 @@ app.use(bodyParser.json());
 
 // Logging middleware (Move to the top)
 app.use((req, res, next) => {
-  console.log(`Received ${req.method} request on ${req.url} with body:`, req.body);
-  next();
-});
+    console.log(`Received ${req.method} request on ${req.url} with body:`, req.body);
+    next();
+  });
 
 // Global variable to store the latest stock data
 let latestStock = {};
 
 // Endpoint to receive updates from Pipeworks
 app.post("/api/data", (req, res) => {
-  console.log("===== Incoming POST request to /api/data =====");
-  console.log("Received Request Body:", req.body);
-
   const { command, value } = req.body;
   
   if (!command || !value) {
@@ -66,7 +63,17 @@ app.get("/", (req, res) => {
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 // Enable CORS Preflight Requests
-app.options("*", cors());
+app.use((req, res, next) => {
+    if (req.method === "OPTIONS") {
+      res.setHeader("Access-Control-Allow-Origin", apiUrl || "*");
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      res.setHeader("Access-Control-Allow-Credentials", "true");
+      return res.status(204).end();
+    }
+    next();
+  });
+  
 
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
