@@ -1,6 +1,10 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
+import dotenv from "dotenv";
+
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,17 +15,17 @@ app.use((req, res, next) => {
     next();
   });
 
+  const apiUrl = process.env.VITE_FRONTEND_URL;
+
 // Middleware
 app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", apiUrl || "http://localhost:5173");
+    res.setHeader("Access-Control-Allow-Origin", apiUrl );
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
     res.setHeader("Access-Control-Allow-Credentials", "true");
     next();
 });
 app.use(bodyParser.json());
-
-const apiUrl = process.env.VITE_FRONTEND_URL;
 
 // Global variable to store the latest stock data
 let latestStock = {};
@@ -72,7 +76,7 @@ app.get('/favicon.ico', (req, res) => res.status(204).end());
 // Enable CORS Preflight Requests
 app.use((req, res, next) => {
     if (req.method === "OPTIONS") {
-      res.setHeader("Access-Control-Allow-Origin", apiUrl || "*");
+      res.setHeader("Access-Control-Allow-Origin", apiUrl );
       res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
       res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
       res.setHeader("Access-Control-Allow-Credentials", "true");
