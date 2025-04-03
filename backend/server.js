@@ -9,13 +9,16 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const apiUrl = process.env.VITE_FRONTEND_URL;
+  app.use(bodyParser.json());
+
 // Logging middleware (Move to the top)
 app.use((req, res, next) => {
     console.log(`Received ${req.method} request on ${req.url} with body:`, req.body);
     next();
   });
 
-  const apiUrl = process.env.VITE_FRONTEND_URL;
+  
 
 // Middleware
 app.use((req, res, next) => {
@@ -25,7 +28,6 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Credentials", "true");
     next();
 });
-app.use(bodyParser.json());
 
 // Global variable to store the latest stock data
 let latestStock = {};
@@ -40,6 +42,9 @@ app.post("/api/data", (req, res) => {
 
   console.log(`Received command: ${command}`);
   console.log(`Received value: ${value}`);
+
+  // Reset latestStock to an empty object before updating it
+  latestStock = {}; 
 
   // Process value string into an array
   const items = value.split(",").map(entry => {

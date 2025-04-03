@@ -59,9 +59,14 @@ const Product = ({ items, cart, setCart, vendingMachineId, setVendingMachineId }
 
       if (data.items) {
         setStock((prevStock) => {
-          const updatedStock = { ...prevStock };
+          const updatedStock = {};
           data.items.forEach(({ itemId, quantity }) => {
             updatedStock[itemId] = quantity;
+          });
+          items.forEach(({ id }) => {
+            if (!(id in updatedStock)) {
+              updatedStock[id] = 0;
+            }
           });
           return updatedStock;
         });
@@ -141,6 +146,7 @@ const Product = ({ items, cart, setCart, vendingMachineId, setVendingMachineId }
                 <div className="card-body">
                   <h5 className="card-title">{product.title}</h5>
                   <p className="card-text">{product.description}</p>
+                  <p className="card-text">Product ID: {product.id}</p>
                   <p>Available: {stock[product.id]}</p>
                   <button className="btn btn-primary mx-3">Rs {product.price}</button>
                   <button
