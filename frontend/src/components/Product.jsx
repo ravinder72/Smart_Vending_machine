@@ -69,7 +69,7 @@ const Product = ({ items, cart, setCart, vendingMachineId, setVendingMachineId }
         } catch (error) {
             console.error("Error fetching stock data:", error);
         }
-    }, 8000);
+    }, 18000);
 };
 
 
