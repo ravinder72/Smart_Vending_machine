@@ -47,30 +47,29 @@ const Product = ({ items, cart, setCart, vendingMachineId, setVendingMachineId }
         console.error("Error sending webhook:", error);
         alert("Failed to notify vending machine.");
     }
-
-    // Wait for 8 seconds before fetching stock data
-    setTimeout(async () => {
-        try {
-            const apiUrl = import.meta.env.VITE_BACKEND_URL;
-            const response = await fetch(`${apiUrl}/api/data`);
-            const data = await response.json();
-
-            console.log("Stock Data Fetched:", data);
-
-            if (data.items) {
-                setStock((prevStock) => {
-                    const updatedStock = { ...prevStock };
-                    data.items.forEach(({ itemId, quantity }) => {
-                        updatedStock[itemId] = quantity;
-                    });
-                    return updatedStock;
-                });
-            }
-        } catch (error) {
-            console.error("Error fetching stock data:", error);
-        }
-    }, 18000);
 };
+
+  const fetchStockData = async () => {
+    try {
+      const apiUrl = import.meta.env.VITE_BACKEND_URL;
+      const response = await fetch(`${apiUrl}/api/data`);
+      const data = await response.json();
+
+      console.log("Stock Data Fetched:", data);
+
+      if (data.items) {
+        setStock((prevStock) => {
+          const updatedStock = { ...prevStock };
+          data.items.forEach(({ itemId, quantity }) => {
+            updatedStock[itemId] = quantity;
+          });
+          return updatedStock;
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching stock data:", error);
+    }
+  };
 
 
 
@@ -97,6 +96,9 @@ const Product = ({ items, cart, setCart, vendingMachineId, setVendingMachineId }
 
       <button onClick={() => setShowCheckoutForm(true)} className="btn btn-primary">
         Set Vending ID
+      </button>
+      <button onClick={fetchStockData} className="btn btn-success mx-2">
+        Get Data
       </button>
 
       {showCheckoutForm && (
