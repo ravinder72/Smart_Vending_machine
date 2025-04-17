@@ -2,12 +2,17 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
+import axios from "axios";
 
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const AIO_USERNAME = process.env.AIO_USERNAME;
+const AIO_KEY = process.env.AIO_KEY;
+const AIO_BASE_URL = `https://io.adafruit.com/api/v2/${AIO_USERNAME}/feeds`;
 
 const apiUrl = process.env.VITE_FRONTEND_URL;
   app.use(bodyParser.json());
@@ -89,6 +94,64 @@ app.use((req, res, next) => {
     }
     next();
   });
+
+// Send data to a specific feed
+async function sendToAdafruit(feed, value) {
+  try {
+    const res = await axios.post(`${AIO_BASE_URL}/${feed}/data`, {
+      value
+    }, {
+      headers: {
+        'X-AIO-Key': AIO_KEY,
+        'Content-Type': 'application/json'
+      }
+    });
+    console.log("✅ Sent to Adafruit:", res.data);
+    return res.data;
+  } catch (err) {
+    console.error("❌ Error sending to Adafruit:", err.response?.data || err.message);
+    throw err;
+  }
+}
+
+// Get latest data from a specific feed
+async function getFromAdafruit(feed) {
+  try {
+    const res = await axios.get(`${AIO_BASE_URL}/${feed}/data?limit=1`, {
+      headers: {
+        'X-AIO-Key': AIO_KEY
+      }
+    });
+    console.log("📥 Latest from Adafruit:", res.data[0]);
+    return res.data[0];
+  } catch (err) {
+    console.error("❌ Error fetching from Adafruit:", err.response?.data || err.message);
+    throw err;
+  }
+}
+
+app.post("/api/adafruit/send", async (req, res) => {
+  const { feed, value } = req.body;
+  if (!feed || value == null) return res.status(400).json({ error: "Missing feed or value" });
+
+  try {
+    const result = await sendToAdafruit(feed, value);
+    res.json({ status: "success", result });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to send to Adafruit" });
+  }
+});
+
+app.get("/api/adafruit/get/:feed", async (req, res) => {
+  const { feed } = req.params;
+  try {
+    const result = await getFromAdafruit(feed);
+    res.json({ status: "success", result });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch from Adafruit" });
+  }
+});
+
   
 
 app.listen(PORT, () => {

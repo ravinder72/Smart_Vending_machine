@@ -16,49 +16,52 @@ const Cart = ({ cart, setCart, vendingMachineId }) => {
       alert("Error: Vending Machine ID is missing.");
       return;
     }
+  
     const upiId = "example@oksbi";
     const amount = totalPrice;
     const transactionId = `TXN${Date.now()}`;
-
     const upiUrl = `upi://pay?pa=${upiId}&pn=VendingMachine&tid=${transactionId}&tr=${transactionId}&tn=Payment&am=${amount}&cu=INR`;
-
+  
     const upiAnchor = document.createElement("a");
     upiAnchor.href = upiUrl;
     upiAnchor.style.display = "none";
     document.body.appendChild(upiAnchor);
     upiAnchor.click();
     document.body.removeChild(upiAnchor);
-
+  
     setTimeout(async () => {
       const isPaid = window.confirm("Did you complete the payment?");
       if (isPaid) {
-        const webhookUrl = "https://eo3w4bepwknwo1c.m.pipedream.net";
-
-        const payload = {
-          event: "CHECKOUT_STARTED",
-          vendingMachineId: vendingMachineId,
-          cartItems: cart,
-          totalAmount: amount,
-          timestamp: new Date().toISOString(),
-        };
-
+        // ✅ Use .env variable for backend URL
+        const apiUrl = `${import.meta.env.VITE_BACKEND_URL}/api/adafruit/send`;
+  
+        const itemIds = cart.map((item) => item.id).join(",");
+  
+        const payloads = [
+          { feed: "vending-id", value: vendingMachineId },
+          { feed: "time-stamp", value: "0" },
+          { feed: "amount", value: itemIds }
+        ];
+  
         try {
-          const response = await fetch(webhookUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          });
-
-          const result = await response.text();
-          console.log("Webhook response:", result);
+          // Send all payloads in parallel
+          await Promise.all(
+            payloads.map((payload) =>
+              fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+              })
+            )
+          );
+  
           alert("Payment processed, vending will start soon!");
-
           setCart([]);
           setShowPaymentForm(false);
         } catch (error) {
-          console.error("Error sending webhook:", error);
+          console.error("Error sending to backend:", error);
           alert("Payment successful, but vending machine processing failed.");
         }
       } else {
@@ -66,6 +69,8 @@ const Cart = ({ cart, setCart, vendingMachineId }) => {
       }
     }, 5000);
   };
+  
+  
 
   return (
     <>
