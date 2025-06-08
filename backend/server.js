@@ -10,38 +10,13 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const AIO_USERNAME = process.env.AIO_USERNAME;
-const AIO_KEY = process.env.AIO_KEY;
-const AIO_BASE_URL = `https://io.adafruit.com/api/v2/${AIO_USERNAME}/feeds`;
-
-const apiUrl = process.env.VITE_FRONTEND_URL;
-
-// Payment gateway configuration
-let salt_key = "96434309-7796-489d-8924-ab56988a6076";
-let merchant_id = "PGTESTPAYUAT86";
-
-app.use(bodyParser.json());
-app.use(express.json());
-app.use(
-  express.urlencoded({
-    extended: false,
-  })
-);
-app.use(cors());
-app.use(
-  bodyParser.urlencoded({
-    extended: false,
-  })
-);
-
 // Logging middleware (Move to the top)
 app.use((req, res, next) => {
-  console.log(
-    `Received ${req.method} request on ${req.url} with body:`,
-    req.body
-  );
-  next();
-});
+    console.log(`Received ${req.method} request on ${req.url} with body:`, req.body);
+    next();
+  });
+
+  const apiUrl = process.env.VITE_FRONTEND_URL;
 
 // Middleware
 app.use((req, res, next) => {
@@ -51,6 +26,7 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Credentials", "true");
   next();
 });
+app.use(bodyParser.json());
 
 // Global variable to store the latest stock data
 let latestStock = {};
@@ -67,9 +43,6 @@ app.post("/api/data", (req, res) => {
 
   console.log(`Received command: ${command}`);
   console.log(`Received value: ${value}`);
-
-  // Reset latestStock to an empty object before updating it
-  latestStock = {};
 
   // Process value string into an array
   const items = value.split(",").map((entry) => {
