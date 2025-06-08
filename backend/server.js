@@ -2,17 +2,17 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-<<<<<<< HEAD
 import axios from "axios";
 import crypto from "crypto";
-=======
-
->>>>>>> parent of 20d61bf (removed pipedreams)
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const AIO_USERNAME = process.env.AIO_USERNAME;
+const AIO_KEY = process.env.AIO_KEY;
+const AIO_BASE_URL = `https://io.adafruit.com/api/v2/${AIO_USERNAME}/feeds`;
 
 const apiUrl = process.env.VITE_FRONTEND_URL;
 
@@ -105,7 +105,6 @@ app.get("/favicon.ico", (req, res) => res.status(204).end());
 
 // Enable CORS Preflight Requests
 app.use((req, res, next) => {
-<<<<<<< HEAD
   if (req.method === "OPTIONS") {
     res.setHeader("Access-Control-Allow-Origin", apiUrl);
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -293,18 +292,6 @@ app.post("/status", async (req, res) => {
       return res.redirect(url);
     });
 });
-=======
-    if (req.method === "OPTIONS") {
-      res.setHeader("Access-Control-Allow-Origin", apiUrl );
-      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-      res.setHeader("Access-Control-Allow-Credentials", "true");
-      return res.status(204).end();
-    }
-    next();
-  });
-  
->>>>>>> parent of 20d61bf (removed pipedreams)
 
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);

@@ -19,7 +19,6 @@ const Cart = ({ cart, setCart, vendingMachineId }) => {
       alert("Error: Vending Machine ID is missing.");
       return;
     }
-<<<<<<< HEAD
 
     if (cart.length === 0) {
       alert("Your cart is empty!");
@@ -33,57 +32,6 @@ const Cart = ({ cart, setCart, vendingMachineId }) => {
 
     // Navigate to payment page
     navigate("/payment");
-=======
-    const upiId = "example@oksbi";
-    const amount = totalPrice;
-    const transactionId = `TXN${Date.now()}`;
-
-    const upiUrl = `upi://pay?pa=${upiId}&pn=VendingMachine&tid=${transactionId}&tr=${transactionId}&tn=Payment&am=${amount}&cu=INR`;
-
-    const upiAnchor = document.createElement("a");
-    upiAnchor.href = upiUrl;
-    upiAnchor.style.display = "none";
-    document.body.appendChild(upiAnchor);
-    upiAnchor.click();
-    document.body.removeChild(upiAnchor);
-
-    setTimeout(async () => {
-      const isPaid = window.confirm("Did you complete the payment?");
-      if (isPaid) {
-        const webhookUrl = "https://eo3w4bepwknwo1c.m.pipedream.net";
-
-        const payload = {
-          event: "CHECKOUT_STARTED",
-          vendingMachineId: vendingMachineId,
-          cartItems: cart,
-          totalAmount: amount,
-          timestamp: new Date().toISOString(),
-        };
-
-        try {
-          const response = await fetch(webhookUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          });
-
-          const result = await response.text();
-          console.log("Webhook response:", result);
-          alert("Payment processed, vending will start soon!");
-
-          setCart([]);
-          setShowPaymentForm(false);
-        } catch (error) {
-          console.error("Error sending webhook:", error);
-          alert("Payment successful, but vending machine processing failed.");
-        }
-      } else {
-        alert("Payment not completed. Try again.");
-      }
-    }, 5000);
->>>>>>> parent of 20d61bf (removed pipedreams)
   };
 
   return (

@@ -23,31 +23,34 @@ const Product = ({ items, cart, setCart, vendingMachineId, setVendingMachineId }
     alert(`Vending Machine ID: ${vendingMachineId}`);
     setShowCheckoutForm(false);
 
-    // Send '1' to the webhook
-    const webhookUrl = "https://eofgd087th906qk.m.pipedream.net";
-    const payload = {
-        event: "VENDING_MACHINE_INITIALIZED",
-        vendingMachineId: vendingMachineId,
-        data: '1',
-        timestamp: new Date().toISOString(),
-    };
+    const apiUrl = `${import.meta.env.VITE_BACKEND_URL}/api/adafruit/send`;
+
+    const payloads = [
+        { feed: "time-stamp", value: "1" },
+        { feed: "vending-id", value: vendingMachineId }
+    ];
 
     try {
-        const response = await fetch(webhookUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-        });
+        for (const payload of payloads) {
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
 
-        const result = await response.text();
-        console.log("Webhook response:", result);
+            const result = await response.json();
+            console.log(`Sent to ${payload.feed}:`, result);
+        }
     } catch (error) {
-        console.error("Error sending webhook:", error);
-        alert("Failed to notify vending machine.");
+        console.error("Error sending to backend:", error);
+        alert("Failed to send data to backend.");
     }
 };
+
+
+
 
   const fetchStockData = async () => {
     try {
