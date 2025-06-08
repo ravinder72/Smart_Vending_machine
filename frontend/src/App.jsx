@@ -6,8 +6,6 @@ import ProductDetail from './components/ProductDetail';
 import SearchItem from './components/SearchItem';
 import Cart from './components/Cart';
 import { items } from './components/Data';
-import Payment from './components/payment';
-import Success from './components/success';
 
 const App = () => {
   const [data, setData] = useState([...items]);
@@ -32,8 +30,6 @@ const App = () => {
 
           {/* ✅ Pass vendingMachineId to Cart */}
           <Route path="/cart" element={<Cart cart={cart} setCart={setCart} vendingMachineId={vendingMachineId} />} />
-          <Route path="/payment" element={<Payment/>} />
-          <Route path="/success" element={<Success/>} />
         </Routes>
       </Router>
     </>
